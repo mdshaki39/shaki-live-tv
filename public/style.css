@@ -221,6 +221,15 @@ main{ max-width:1180px; margin:0 auto; padding:24px 20px 60px; position:relative
 .watch-btn:hover{ background:var(--turf-bright); transform:translateY(-1px); }
 .watch-btn.is-link::after{ content:' ↗'; }
 
+.watch-links{
+  display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap;
+}
+.watch-btn-alt{
+  background:transparent; color:var(--chalk) !important;
+  border:1px solid var(--line-strong); font-size:12.5px; padding:9px 16px;
+}
+.watch-btn-alt:hover{ background:var(--surface-3); border-color:var(--gold); }
+
 /* ---------- Panels ---------- */
 .panel{ display:none; }
 .panel.active{ display:block; animation:fadein .25s ease; }

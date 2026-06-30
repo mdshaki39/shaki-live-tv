@@ -66,7 +66,7 @@ document.querySelectorAll('.tab').forEach(btn => {
 // ---------- State ----------
 let ALL_MATCHES = [];
 let STANDINGS = [];
-let CHANNELS = { defaultLink: { label:'কোথায় দেখা যাবে দেখুন', type:'link', url:'https://www.livesoccertv.com/' }, rules: [] };
+let CHANNELS = { defaultLinks: [{ label:'কোথায় দেখা যাবে দেখুন', type:'link', url:'https://www.livesoccertv.com/' }], rules: [] };
 let dataLive = false;
 let CURRENT_COMP = 'WC';
 let COMPETITIONS = [];
@@ -87,25 +87,47 @@ function scoreLabel(m){
   return 'VS';
 }
 
-function resolveWatchLink(match){
+// Normalizes either the old single {label,type,url} shape or the new
+// {links:[...]} shape into a plain array of {label,type,url}.
+function linksOf(obj){
+  if (!obj) return [];
+  if (Array.isArray(obj.links)) return obj.links;
+  if (obj.url) return [{ label: obj.label, type: obj.type, url: obj.url }];
+  return [];
+}
+
+function resolveWatchLinks(match){
   const home = teamName(match.homeTeam), away = teamName(match.awayTeam);
   const compCode = (match.competition && match.competition.code) || CURRENT_COMP;
   for (const rule of (CHANNELS.rules || [])){
     const m = rule.match || {};
-    if (m.competition && m.competition === compCode) return rule;
+    if (m.competition && m.competition === compCode) return linksOf(rule);
     if (m.teamContains && m.teamContains.length){
       const hit = m.teamContains.some(t => home.toLowerCase().includes(t.toLowerCase()) || away.toLowerCase().includes(t.toLowerCase()));
-      if (hit) return rule;
+      if (hit) return linksOf(rule);
     }
-    if (m.stage && match.stage === m.stage) return rule;
+    if (m.stage && match.stage === m.stage) return linksOf(rule);
   }
-  return CHANNELS.defaultLink;
+  return CHANNELS.defaultLinks || linksOf(CHANNELS.defaultLink) || [];
 }
 
 function renderWatchBtn(match, big){
-  const link = resolveWatchLink(match);
-  const cls = link.type === 'link' ? 'is-link' : '';
-  return `<a class="${big ? 'watch-btn' : 'mini-watch'} ${cls}" href="${link.url}" target="_blank" rel="noopener">${big ? 'লাইভ দেখুন ▸' : (link.label || 'দেখুন')}</a>`;
+  const links = resolveWatchLinks(match);
+  if (!links.length) return '';
+  if (!big){
+    // Compact card view: just the first (primary) source to save space.
+    const link = links[0];
+    const cls = link.type === 'link' ? 'is-link' : '';
+    return `<a class="mini-watch ${cls}" href="${link.url}" target="_blank" rel="noopener">${link.label || 'দেখুন'}</a>`;
+  }
+  // Hero view: show every legitimate source as its own button so visitors
+  // have a fallback if one broadcaster's site happens to be down.
+  const buttons = links.map((link, i) => {
+    const cls = link.type === 'link' ? 'is-link' : '';
+    const sizeCls = i === 0 ? 'watch-btn' : 'watch-btn watch-btn-alt';
+    return `<a class="${sizeCls} ${cls}" href="${link.url}" target="_blank" rel="noopener">${link.label || 'লাইভ দেখুন'}</a>`;
+  }).join('');
+  return `<div class="watch-links">${buttons}</div>`;
 }
 
 // ---------- Fetch helpers ----------
@@ -186,11 +208,7 @@ function setupHero(){
   document.querySelector('#heroTeamHome .hero-team-name').textContent = teamName(target.homeTeam);
   document.querySelector('#heroTeamAway .hero-team-name').textContent = teamName(target.awayTeam);
   document.getElementById('heroVenue').textContent = target.venue || '';
-  const link = resolveWatchLink(target);
-  const heroBtn = document.getElementById('heroWatchBtn');
-  heroBtn.href = link.url;
-  heroBtn.textContent = 'লাইভ দেখুন ▸';
-  heroBtn.classList.toggle('is-link', link.type === 'link');
+  document.getElementById('heroWatchLinks').innerHTML = renderWatchBtn(target, true);
 
   if (live){
     document.getElementById('heroEyebrow').textContent = '🔴 এখন চলছে';
