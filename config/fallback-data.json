@@ -1,0 +1,40 @@
+{
+  "isFallback": true,
+  "note": "This is sample/demo data shown only because no live FOOTBALL_DATA_API_KEY is configured, or the live API was unreachable. Add your free key as described in README.md to replace this with real live data.",
+  "matches": [
+    {
+      "id": 1,
+      "utcDate": "2026-06-30T17:00:00Z",
+      "status": "TIMED",
+      "stage": "ROUND_OF_32",
+      "group": null,
+      "homeTeam": { "name": "Ivory Coast", "crest": "" },
+      "awayTeam": { "name": "Norway", "crest": "" },
+      "score": { "fullTime": { "home": null, "away": null } },
+      "venue": "AT&T Stadium, Dallas"
+    },
+    {
+      "id": 2,
+      "utcDate": "2026-06-30T21:00:00Z",
+      "status": "TIMED",
+      "stage": "ROUND_OF_32",
+      "group": null,
+      "homeTeam": { "name": "France", "crest": "" },
+      "awayTeam": { "name": "Sweden", "crest": "" },
+      "score": { "fullTime": { "home": null, "away": null } },
+      "venue": "MetLife Stadium, New Jersey"
+    },
+    {
+      "id": 3,
+      "utcDate": "2026-07-01T01:00:00Z",
+      "status": "TIMED",
+      "stage": "ROUND_OF_32",
+      "group": null,
+      "homeTeam": { "name": "Mexico", "crest": "" },
+      "awayTeam": { "name": "Ecuador", "crest": "" },
+      "score": { "fullTime": { "home": null, "away": null } },
+      "venue": "Estadio Azteca, Mexico City"
+    }
+  ],
+  "standings": []
+}

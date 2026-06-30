@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SHAKI_Live.TV — লাইভ ফুটবল শিডিউল, স্কোর ও স্ট্যান্ডিংস</title>
+<meta name="description" content="SHAKI_Live.TV — World Cup ও ক্লাব ফুটবলের লাইভ শিডিউল, স্কোর, পয়েন্ট টেবিল — BD সময়ে।">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800;900&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="grain"></div>
+
+<div class="brand-strip">
+  <div class="brand-strip-inner">
+    <div class="brand-logo" aria-label="SHAKI_Live.TV">
+      <svg class="brand-icon" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="20" cy="20" r="18" fill="#0A1410" stroke="#D4A23A" stroke-width="2"/>
+        <polygon points="16,12 30,20 16,28" fill="#4CAF6E"/>
+        <circle cx="20" cy="20" r="18" fill="none" stroke="#E2453C" stroke-width="2" stroke-dasharray="2 4" opacity="0.0" class="brand-live-ring"/>
+      </svg>
+      <span class="brand-logo-text">SHAKI<span class="brand-logo-underscore">_</span>Live<span class="brand-logo-dot">.</span>TV</span>
+    </div>
+    <span class="brand-tagline">আপনার ব্যক্তিগত ফুটবল ব্রডকাস্ট সেন্টার</span>
+  </div>
+</div>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="comp-selector" id="compSelector"><!-- populated by app.js --></div>
+    <div class="bd-clock" id="bdClock">
+      <span class="bd-clock-label">BD সময়</span>
+      <span class="bd-clock-time" id="bdClockTime">--:--:--</span>
+    </div>
+  </div>
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-tab="today">আজকের খেলা</button>
+    <button class="tab" data-tab="fixtures">ফিকশ্চার</button>
+    <button class="tab" data-tab="standings">পয়েন্ট টেবিল</button>
+    <button class="tab" data-tab="groups">গ্রুপ</button>
+    <button class="tab" data-tab="results">ফলাফল</button>
+  </nav>
+</header>
+
+<div class="ticker-wrap" id="tickerWrap" hidden>
+  <div class="ticker-label">LIVE</div>
+  <div class="ticker-track" id="tickerTrack"></div>
+</div>
+
+<div class="status-banner" id="statusBanner" hidden></div>
+
+<main>
+
+  <!-- HERO: next match scoreboard -->
+  <section class="hero" id="hero">
+    <div class="hero-inner">
+      <div class="hero-eyebrow" id="heroEyebrow">পরবর্তী ম্যাচ</div>
+      <div class="hero-board" id="heroBoard">
+        <div class="hero-team" id="heroTeamHome">
+          <span class="hero-team-name">—</span>
+        </div>
+        <div class="hero-center">
+          <div class="flipclock" id="flipClock">
+            <div class="flip-unit"><div class="flip-digits" id="fDays">--</div><div class="flip-caption">দিন</div></div>
+            <div class="flip-sep">:</div>
+            <div class="flip-unit"><div class="flip-digits" id="fHours">--</div><div class="flip-caption">ঘন্টা</div></div>
+            <div class="flip-sep">:</div>
+            <div class="flip-unit"><div class="flip-digits" id="fMins">--</div><div class="flip-caption">মিনিট</div></div>
+            <div class="flip-sep">:</div>
+            <div class="flip-unit"><div class="flip-digits" id="fSecs">--</div><div class="flip-caption">সেকেন্ড</div></div>
+          </div>
+          <div class="hero-meta" id="heroMeta">তারিখ লোড হচ্ছে…</div>
+        </div>
+        <div class="hero-team" id="heroTeamAway">
+          <span class="hero-team-name">—</span>
+        </div>
+      </div>
+      <div class="hero-footer">
+        <span class="hero-venue" id="heroVenue"></span>
+        <a class="watch-btn" id="heroWatchBtn" href="#" target="_blank" rel="noopener">লাইভ দেখুন ▸</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- TODAY -->
+  <section class="panel active" id="panel-today">
+    <h2 class="panel-title">আজকের ম্যাচসমূহ <span class="panel-title-sub" id="todayDateLabel"></span></h2>
+    <div class="match-grid" id="todayGrid"><div class="empty-state">লোড হচ্ছে…</div></div>
+  </section>
+
+  <!-- FIXTURES -->
+  <section class="panel" id="panel-fixtures">
+    <h2 class="panel-title">সম্পূর্ণ ফিকশ্চার</h2>
+    <div class="filter-row">
+      <select id="fixtureStageFilter">
+        <option value="">সব পর্যায়</option>
+        <option value="GROUP_STAGE">গ্রুপ পর্ব</option>
+        <option value="LAST_16">রাউন্ড অব ১৬</option>
+        <option value="QUARTER_FINALS">কোয়ার্টার ফাইনাল</option>
+        <option value="SEMI_FINALS">সেমিফাইনাল</option>
+        <option value="FINAL">ফাইনাল</option>
+      </select>
+      <input type="text" id="fixtureTeamFilter" placeholder="দল খুঁজুন (যেমন: Brazil)">
+    </div>
+    <div class="fixture-list" id="fixtureList"><div class="empty-state">লোড হচ্ছে…</div></div>
+  </section>
+
+  <!-- STANDINGS -->
+  <section class="panel" id="panel-standings">
+    <h2 class="panel-title">গ্রুপ পয়েন্ট টেবিল</h2>
+    <div class="group-tabs" id="standingsGroupTabs"></div>
+    <div id="standingsTableWrap"><div class="empty-state">লোড হচ্ছে…</div></div>
+  </section>
+
+  <!-- GROUPS -->
+  <section class="panel" id="panel-groups">
+    <h2 class="panel-title">গ্রুপ বিভাজন — কে কোন গ্রুপে</h2>
+    <div class="groups-grid" id="groupsGrid"><div class="empty-state">লোড হচ্ছে…</div></div>
+  </section>
+
+  <!-- RESULTS -->
+  <section class="panel" id="panel-results">
+    <h2 class="panel-title">সাম্প্রতিক ফলাফল</h2>
+    <div class="fixture-list" id="resultsList"><div class="empty-state">লোড হচ্ছে…</div></div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <p><b>SHAKI_Live.TV</b> — ডেটা সোর্স: <a href="https://www.football-data.org" target="_blank" rel="noopener">football-data.org</a> (free tier) — তথ্যে ভুল থাকতে পারে।</p>
+  <p>এই সাইট কোনো সম্প্রচার চ্যানেল হোস্ট করে না — "লাইভ দেখুন" বাটন আপনাকে অফিসিয়াল/লিগ্যাল সোর্সে নিয়ে যায়।</p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

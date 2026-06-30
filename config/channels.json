@@ -1,0 +1,23 @@
+{
+  "_readme": "This controls the 'লাইভ দেখুন' (Watch Live) button. IMPORTANT HONESTY NOTE: there is no single global free legal source for every match - free vs paid depends on your country and which league. type 'link' opens an official/legal source in a new tab. type 'embed' should ONLY ever be used with a genuinely OFFICIAL embeddable stream URL (e.g. FIFA's own official YouTube live embed) - never an unofficial/pirated stream. Rules are checked top to bottom, first match wins; match.competition checks the competition code (WC, PL, CL, PD, BL1, SA, FL1, DED, PPL, ELC, BSA, EC), match.teamContains checks team names, match.stage checks the match stage.",
+
+  "defaultLink": {
+    "label": "কোথায় ফ্রি/লিগ্যাল দেখা যাবে দেখুন",
+    "type": "link",
+    "url": "https://www.livesoccertv.com/"
+  },
+
+  "rules": [
+    {
+      "_comment": "World Cup 2026 is free-to-air in Bangladesh on T Sports - confirmed free, no subscription needed.",
+      "label": "T Sports এ ফ্রি দেখুন",
+      "type": "link",
+      "url": "https://www.tsports.com/live",
+      "match": { "competition": "WC" }
+    }
+  ],
+
+  "_howToAddTeamSpecificLink": "Example: { \"label\": \"Watch on Star Sports\", \"type\": \"link\", \"url\": \"https://www.hotstar.com/in/sports/football\", \"match\": { \"teamContains\": [\"India\"] } }",
+  "_howToAddOfficialEmbed": "Example, only with a real official embeddable URL: { \"label\": \"অফিসিয়াল লাইভ দেখুন\", \"type\": \"embed\", \"url\": \"https://www.youtube.com/embed/VIDEO_ID\", \"match\": { \"stage\": \"FINAL\" } }",
+  "_clubFootballNote": "For club football (Premier League, La Liga, etc) after the World Cup, free full-match broadcasters vary week to week and country to country - there usually isn't a single fixed free channel. The default link above sends viewers to a legal 'where to watch' finder instead of guessing wrong. Add specific rules here if you find a reliable free source for your country."
+}
