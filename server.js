@@ -160,29 +160,39 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(PORT, () => {
-  console.log(`SHAKI_Live.TV dashboard running on port ${PORT}`);
-  if (!API_KEY) {
-    console.warn('WARNING: FOOTBALL_DATA_API_KEY not set — serving fallback/demo data only.');
-  }
-});
+// ---- Vercel serverless support -----------------------------------------
+// On Vercel, this file is required by api/index.js and the exported `app`
+// is used directly as the request handler — no app.listen(), no keep-alive
+// self-ping needed (serverless functions don't sleep the same way).
+const IS_VERCEL = !!process.env.VERCEL;
 
-// ---- Keep-alive self-ping (Render free tier sleeps after 15 min idle) --
-// Render auto-sets RENDER_EXTERNAL_URL to the live https URL of this service.
-// Pinging /api/health every 10 minutes stops it from ever going idle, so
-// visitors always get an instantly-loaded, already-awake server.
-const SELF_URL = process.env.RENDER_EXTERNAL_URL || process.env.SELF_PING_URL || '';
-if (SELF_URL) {
-  const PING_INTERVAL_MS = 10 * 60 * 1000; // 10 minutes (< Render's 15 min sleep threshold)
-  setInterval(() => {
-    https.get(`${SELF_URL}/api/health`, (res) => {
-      console.log(`[keep-alive] pinged self, status ${res.statusCode}`);
-    }).on('error', (err) => {
-      console.warn(`[keep-alive] self-ping failed: ${err.message}`);
-    });
-  }, PING_INTERVAL_MS);
-  console.log(`[keep-alive] self-ping enabled -> ${SELF_URL}/api/health every ${PING_INTERVAL_MS / 60000} min`);
-} else {
-  console.log('[keep-alive] SELF_PING_URL/RENDER_EXTERNAL_URL not set — self-ping disabled (fine for local dev).');
+if (!IS_VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`SHAKI_Live.TV dashboard running on port ${PORT}`);
+    if (!API_KEY) {
+      console.warn('WARNING: FOOTBALL_DATA_API_KEY not set — serving fallback/demo data only.');
+    }
+  });
+
+  // ---- Keep-alive self-ping (Render/Back4app free tiers sleep when idle) --
+  // Render auto-sets RENDER_EXTERNAL_URL; for other hosts set SELF_PING_URL
+  // manually as an env var. Pinging /api/health every 10 minutes keeps the
+  // instance awake so visitors always get an instantly-loaded server.
+  const SELF_URL = process.env.RENDER_EXTERNAL_URL || process.env.SELF_PING_URL || '';
+  if (SELF_URL) {
+    const PING_INTERVAL_MS = 10 * 60 * 1000; // 10 minutes
+    setInterval(() => {
+      https.get(`${SELF_URL}/api/health`, (res) => {
+        console.log(`[keep-alive] pinged self, status ${res.statusCode}`);
+      }).on('error', (err) => {
+        console.warn(`[keep-alive] self-ping failed: ${err.message}`);
+      });
+    }, PING_INTERVAL_MS);
+    console.log(`[keep-alive] self-ping enabled -> ${SELF_URL}/api/health every ${PING_INTERVAL_MS / 60000} min`);
+  } else {
+    console.log('[keep-alive] SELF_PING_URL/RENDER_EXTERNAL_URL not set — self-ping disabled (fine for local dev).');
+  }
 }
+
+module.exports = app;
 
